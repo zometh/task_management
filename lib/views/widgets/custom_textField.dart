@@ -41,6 +41,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
         SizedBox(
           height: widget.heigth.h,
           child: TextField(
+
+            onChanged: (value){
+              setState(() {
+
+              });
+            },
             //textAlign: TextAlign.center,
             controller: widget.controller,
             style: GoogleFonts.inter(
@@ -54,12 +60,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   GoogleFonts.signika(color: Colors.white, fontSize: 20.sp),
               hintText: widget.hintText,
               suffix: widget.showSuffix
-                  ? widget.controller.text != ""
+                  ? widget.controller.text.isNotEmpty
                       ? IconButton(
                           onPressed: () {
-                            widget.controller.text = "";
+                            widget.controller.clear();
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.clear,
                             color: Colors.white,
                           ))
@@ -86,13 +92,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
 class TaskTextField extends StatelessWidget {
   final TextEditingController controller;
-  final String hintText;
+
   final int maxLength;
   final int maxLines;
   const TaskTextField(
       {super.key,
       required this.controller,
-      required this.hintText,
+
       this.maxLength = 50,
       this.maxLines = 1});
 
@@ -110,11 +116,15 @@ class TaskTextField extends StatelessWidget {
         return null;
       },
       decoration: InputDecoration(
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: ColorController().colorFour)),
-          hintText: hintText,
-          hintStyle: GoogleFonts.signika(color: Colors.grey, fontSize: 20.sp)),
+        counterStyle: const TextStyle(color: Colors.white),
+          border: const OutlineInputBorder(
+              //borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.transparent)),
+
+        filled: true,
+        fillColor: ColorController().colorFive,
+
+      ),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,14 +9,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:storage_client/storage_client.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:task_management/models/user_mine.dart';
 
 import '../../controllers/color_controller.dart';
-import '../../services/providers/auth_provider.dart';
-import '../../services/shared_pref/SharedPref.dart';
 import '../widgets/button.dart';
 import '../widgets/custom_textField.dart';
 import '../widgets/custom_title.dart';
@@ -31,7 +25,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool showPassword = true;
+  bool showPassword = false;
   late TextEditingController email;
   late TextEditingController password;
   late TextEditingController prenom;
@@ -61,7 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorController().colorSixth,
+
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 50.h),
@@ -87,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: Column(
                   children: [
                     CircleAvatar(
-                      radius: 45,
+                      radius: 60,
                       backgroundImage: (file == null)
                           ? const AssetImage(
                               "lib/assets/imgs/user_default.jpeg")
@@ -209,7 +203,6 @@ class _RegisterPageState extends State<RegisterPage> {
       String pwd = password.text.trim();
       String firstname = prenom.text.trim();
       String lastname = nom.text.trim();
-      String downloadUrl = "";
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: mail, password: pwd);
 
@@ -218,9 +211,17 @@ class _RegisterPageState extends State<RegisterPage> {
       File fileNew = (file == null
           ? await getImageFileFromAssets("lib/assets/imgs/user_default.jpeg")
           : file!);
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final String filename = '${uid}_$timestamp.jpg';
       await Supabase.instance.client.storage
           .from('users_profiles')
-          .upload(uid, fileNew);
+          .upload(filename, fileNew, fileOptions: const FileOptions(upsert: true));
+      final String imageUrl = Supabase.instance
+          .client
+          .storage
+          .from('users_profiles')
+          .getPublicUrl(filename);
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
@@ -230,8 +231,7 @@ class _RegisterPageState extends State<RegisterPage> {
         "nom": lastname,
         "email": userCredential.user!.email,
         "registerDate": Timestamp.now(),
-        'imageUrl':
-            "https://jrwtnpxjysxvuzvutuzn.supabase.co/storage/v1/object/public/users_profiles/$uid"
+        'imageUrl':imageUrl
       }).then((onValue) {
         if (mounted) Navigator.pop(context);
       });

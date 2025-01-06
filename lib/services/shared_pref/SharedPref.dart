@@ -1,9 +1,5 @@
-import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/user_mine.dart';
-import '../data/get_user_datas.dart';
 /*
 class SharedPref {
   void saveConnectUserInfos() async {

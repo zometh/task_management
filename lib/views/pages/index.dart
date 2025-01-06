@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:task_management/controllers/color_controller.dart';
-import 'package:task_management/views/pages/home.dart';
 import 'package:task_management/views/pages/home_page.dart';
 import 'package:task_management/views/pages/login_page.dart';
 

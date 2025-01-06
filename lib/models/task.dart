@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:task_management/enum/task_state.dart';
 
 class Task {
@@ -25,8 +24,8 @@ class Task {
         state: getState(data['state']),
         idUser: data["idUser"]);
   }
-}
 
+}
 TasksState getState(int value) {
   switch (value) {
     case 1:
@@ -37,3 +36,4 @@ TasksState getState(int value) {
 
   return TasksState.TO_DO;
 }
+

@@ -1,16 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:provider/provider.dart';
 import 'package:task_management/controllers/color_controller.dart';
-import 'package:task_management/services/providers/auth_provider.dart';
-import 'package:task_management/services/shared_pref/SharedPref.dart';
-import 'package:task_management/views/pages/task_view.dart';
-import 'package:task_management/views/widgets/button.dart';
-import 'package:task_management/views/widgets/custom_textField.dart';
+import 'package:task_management/services/formatters/format_text.dart';
+import 'package:task_management/views/pages/tasks_view.dart';
 import 'package:task_management/views/widgets/custom_title.dart';
 
 import '../../models/user_mine.dart';
@@ -32,6 +24,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
     searchController = TextEditingController();
     _tabController = TabController(length: 4, vsync: this);
+
   }
 
   @override
@@ -72,12 +65,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           }
           final data = snapshot.data!.data();
           final UserMine user = UserMine.fromJson(data!);
-          Size size = MediaQuery.of(context).size;
           return DefaultTabController(
             length: _tabController.length,
             child: Scaffold(
               appBar: PreferredSize(
-                  preferredSize: Size.fromHeight(200.h),
+                  preferredSize: Size.fromHeight(165.h),
                   child: SafeArea(
                     child: Padding(
                       padding:
@@ -98,19 +90,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     color: ColorController().colorFour,
                                   ),
                                   Wrap(
-                                    direction: Axis.vertical,
+                                    direction: Axis.horizontal,
                                     children: [
-                                      Text(user.prenom,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'PliatExtended',
-                                            fontSize: 25.sp,
+                                      Text(FormatText().formatTitle(user.prenom),
+                                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                            fontWeight: FontWeight.normal,
+
                                           )),
-                                      Text(user.nom,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'PliatExtended',
-                                            fontSize: 25.sp,
+                                      Text(FormatText().formatTitle(user.nom),
+                                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                            fontWeight: FontWeight.normal,
+
                                           )),
                                     ],
                                   ),
@@ -125,46 +115,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           SizedBox(
                             height: 15.h,
                           ),
-                          TabBar(
-                            padding: EdgeInsets.only(right: 15.w),
-                            labelPadding: EdgeInsets.symmetric(horizontal: 0),
-                            controller: _tabController,
-                            indicatorColor: ColorController().colorFour,
-                            dividerHeight: 0,
-                            unselectedLabelStyle: TextStyle(
-                              fontSize: 13.sp,
-                              fontFamily: 'PliatExtended',
-                            ),
-                            labelStyle: TextStyle(
-                                fontFamily: 'PliatExtended',
-                                fontSize: 13.sp,
-                                color: ColorController().colorFour),
-                            indicator: UnderlineTabIndicator(
-                                borderSide: BorderSide(
-                                    width: 3,
-                                    color: ColorController().colorFour),
-                                insets: const EdgeInsets.all(5)),
-                            automaticIndicatorColorAdjustment: true,
-                            tabs: const [
-                              Tab(
-                                text: "Toutes",
-                              ),
-                              Tab(
-                                text: "En cours",
-                              ),
-                              Tab(
-                                text: "A faire",
-                              ),
-                              Tab(
-                                text: "Terminées",
-                              ),
-                            ],
-                          )
+                          tabBar()
                         ],
                       ),
                     ),
                   )),
-              backgroundColor: ColorController().colorSixth,
+
               body: TabBarView(
                 controller: _tabController,
                 children: menus,
@@ -173,4 +129,42 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           );
         });
   }
+  TabBar tabBar(){
+    return TabBar(
+      padding: EdgeInsets.only(right: 15.w),
+      labelPadding: const EdgeInsets.symmetric(horizontal: 0),
+      controller: _tabController,
+      indicatorColor: ColorController().colorFour,
+      dividerHeight: 0,
+      unselectedLabelStyle: TextStyle(
+        fontSize: 13.sp,
+        fontFamily: 'PliatExtended',
+      ),
+      labelStyle: TextStyle(
+          fontFamily: 'PliatExtended',
+          fontSize: 13.sp,
+          color: ColorController().colorFour),
+      indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(
+              width: 3,
+              color: ColorController().colorFour),
+          insets: const EdgeInsets.all(5)),
+      automaticIndicatorColorAdjustment: true,
+      tabs: const [
+        Tab(
+          text: "Toutes",
+        ),
+        Tab(
+          text: "En cours",
+        ),
+        Tab(
+          text: "A faire",
+        ),
+        Tab(
+          text: "Terminées",
+        ),
+      ],
+    );
+  }
+
 }

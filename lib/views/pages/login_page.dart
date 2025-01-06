@@ -2,17 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:provider/provider.dart';
 import 'package:task_management/controllers/color_controller.dart';
-import 'package:task_management/main.dart';
-import 'package:task_management/services/providers/auth_provider.dart';
-import 'package:task_management/services/shared_pref/SharedPref.dart';
 import 'package:task_management/views/widgets/button.dart';
 import 'package:task_management/views/widgets/custom_textField.dart';
 import 'package:task_management/views/widgets/custom_title.dart';
 import 'package:task_management/views/widgets/vertical_spacer.dart';
 
-import '../../models/user_mine.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorController().colorSixth,
+
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 50.h),
@@ -167,9 +162,31 @@ class _LoginPageState extends State<LoginPage> {
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: mail, password: pwd)
           .then((onValue) {});
-    } catch (e) {
-      _isLoading = false;
+    }on FirebaseAuthException catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
       debugPrint(e.toString());
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context)
+                        .showSnackBar(
+        SnackBar(behavior: SnackBarBehavior.floating,showCloseIcon: true ,content: Text(getMessageFromErrorCode(e.code),
+
+        ),
+        backgroundColor: Colors.red,)
+      );
+    }
+  }
+  String getMessageFromErrorCode(String errorCode) {
+    switch (errorCode) {
+      case "invalid-credential":
+        return "Adresse email ou mot de passe incorrect";
+      case "user-disabled":
+        return "Votre compte est bloqué. Veuillez contacter l'administrateur";
+      case "email-already-in-use":
+        return "L'adresse email existe déja.";
+      default:
+        return "Connexion échouée. Veuillez réssayer plus tard";
     }
   }
 }

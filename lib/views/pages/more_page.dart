@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../controllers/color_controller.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -8,7 +7,7 @@ class MorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorController().colorSixth,
+
       body: Center(
         child: Text(
           'More Page',
