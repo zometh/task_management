@@ -23,16 +23,11 @@ class TaskPage extends StatelessWidget {
             child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.w),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
               children: [
                 IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Iconsax.arrow_left_2, color: Colors.white,)),
                 Text("Détails de la tâche", style: Theme.of(context).textTheme.titleMedium!.copyWith(fontSize: 20.sp),),
-                IconButton(onPressed: (){
-                  final route = MaterialPageRoute(builder: (_){
-                    return EditTask(task: task);
-                  });
-                  Navigator.push(context, route);
-                }, icon: const Icon(Iconsax.edit, color: Colors.white,))
+
               ],
             ),
             ),

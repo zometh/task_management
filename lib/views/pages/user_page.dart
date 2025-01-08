@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,11 +8,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:task_management/services/data/get_user_datas.dart';
+import 'package:task_management/services/formatters/format_text.dart';
+import 'package:task_management/views/pages/custom_appbar.dart';
+import 'package:task_management/views/pages/edit_fullname.dart';
+import 'package:task_management/views/pages/edit_mail.dart';
+import 'package:task_management/views/pages/edit_password.dart';
+import 'package:task_management/views/widgets/user_page_tile.dart';
 
 import '../../controllers/color_controller.dart';
 import '../../models/user_mine.dart';
+import '../../services/providers/navigation_provider.dart';
+import '../widgets/button.dart';
+import '../widgets/custom_title.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -48,22 +59,14 @@ class _UserPageState extends State<UserPage> {
           final data = snapshot.data!.data();
           final UserMine user = UserMine.fromJson(data!);
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text("Profil",
-                style: GoogleFonts.inter(
-                  fontSize: 20.sp,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            appBar: CustomAppBar(appBarTitle: "Profil"),
 
             body: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32.w),
+                padding: EdgeInsets.symmetric(horizontal: 17.w),
                 child: Column(
                   children: [
-                    SizedBox(height: 50.h,),
+                    SizedBox(height: 30.h,),
                     Center(
                       child: CircleAvatar(
                         radius: 73,
@@ -88,7 +91,42 @@ clipBehavior: Clip.none,
                           ),
                         ),
                       ),
-                    )
+                    ),
+                    SizedBox(height: 20.h,),
+                    UserPageTile(
+                        iconData: Iconsax.user_add,
+                        title: FormatText().formatTitle("${user.prenom} ${user.nom}"),
+                        redirectPage: EditFullNamePage(userMine: user)),
+                    SizedBox(height: 12.h,),
+                    UserPageTile(
+                        iconData: Iconsax.user_tag,
+                        title: user.email,
+                        showEdit: false,
+                    ),
+                    SizedBox(height: 12.h,),
+                    UserPageTile(
+                        iconData: Iconsax.lock,
+                        title: "Mot de passe",
+                        redirectPage: EditPassword(userMine: user)),
+                    SizedBox(height: 20.h,),
+                    GestureDetector(
+                      onTap: showTaskDialog,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CustomButton(
+
+                              widget: CustomTitle(
+                                text: "Se déconnecter",
+                                fontSize: 18,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              )),
+
+                        ],
+                      ),
+                    ),
                   ],
                 ),
 
@@ -97,6 +135,10 @@ clipBehavior: Clip.none,
           );
         }
     );
+  }
+  _disconnect() async{
+    await FirebaseAuth.instance.signOut();
+    Provider.of<NavigationProvider>(context, listen: false).changeIndex(0);
   }
   _pickImage() async{
     final XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 30);
@@ -107,6 +149,52 @@ clipBehavior: Clip.none,
       confirmPicChange(file!);
 
     }
+  }
+  showTaskDialog() async{
+    await showDialog(
+        barrierColor: Colors.transparent,
+        barrierDismissible: false,
+        context: context, builder: (_){
+      return BackdropFilter(filter: ImageFilter.blur(
+          sigmaY: 5,
+          sigmaX: 5
+      ),
+        child: AlertDialog(
+
+          backgroundColor: ColorController().colorSixth,
+          content: Text("Etes-vous sur de vouloir vous déconnecter?",
+            style: GoogleFonts.signika(fontSize: 15, color: Colors.white),
+          ),
+          title: Text("Déconnexion",
+            style: GoogleFonts.signika(fontSize: 19.sp, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          actions: [
+            ElevatedButton(onPressed: (){
+              _disconnect();
+              Navigator.pop(context);
+            },
+              style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                  backgroundColor: WidgetStatePropertyAll(Colors.red)
+              ), child: const Text("Oui",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(onPressed: () => Navigator.pop(context),
+              style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.white),
+                  backgroundColor: WidgetStatePropertyAll(Colors.blue)
+              ), child: const Text("Non",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ],
+          shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      );
+    });
   }
   confirmPicChange(File file) async{
     showBottomSheet(

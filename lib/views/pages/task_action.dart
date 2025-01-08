@@ -9,10 +9,12 @@ import 'package:iconsax/iconsax.dart';
 import 'package:task_management/enum/task_state.dart';
 import 'package:task_management/models/task.dart';
 import 'package:task_management/services/formatters/format_date.dart';
-import 'package:task_management/views/pages/task_app_bar.dart';
+import 'package:task_management/views/pages/custom_appbar.dart';
 import 'package:uuid/v4.dart';
 
 import '../../controllers/color_controller.dart';
+import '../../services/formatters/format_text.dart';
+import '../../services/messages/snack_messages.dart';
 import '../widgets/custom_textField.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -46,7 +48,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TaskActionAppBar(title: "Ajout d'une tache", context: context),
+      appBar: CustomAppBar(appBarTitle: "Ajout d'une tache"),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
@@ -168,8 +170,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
         }).then((onValue) {
           if (mounted) {
             Navigator.pop(context);
-            ScaffoldMessenger.of(context)
-                .showSnackBar( SnackBar(content: const Text("Tache ajoutée", style: TextStyle(color: Colors.black),), backgroundColor: ColorController().colorFour,));
+
+            SnackMessage( context,texte: "Tache ajoutée", ).showMessage();
+
           }
         });
       } catch (e) {
@@ -231,7 +234,7 @@ class _EditTaskState extends State<EditTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TaskActionAppBar(title: "Modifier la tache", context: context,),
+      appBar: CustomAppBar(appBarTitle: "Modifier la tache"),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
@@ -299,7 +302,7 @@ class _EditTaskState extends State<EditTask> {
                       onChanged: (int? value) {
                         setState(() {
                           selectedOption = value!;
-                          print("Selected Option: $selectedOption");
+
                         });
                       },
                     ),
@@ -377,6 +380,7 @@ class _EditTaskState extends State<EditTask> {
         child: Center(
           child: isLoading
               ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
                 "Modification en cours",
@@ -385,6 +389,7 @@ class _EditTaskState extends State<EditTask> {
                     fontWeight: FontWeight.bold,
                     fontSize: 20.sp),
               ),
+              SizedBox(width: 5.w,),
               CircularProgressIndicator(
                 color: ColorController().colorSixth,
               )
@@ -406,7 +411,10 @@ class _EditTaskState extends State<EditTask> {
      String descriptionContent = description.text.trim();
      if (formKey.currentState!.validate()) {
        try {
-         isLoading = true;
+
+         setState(() {
+           isLoading = true;
+         });
          final String uid = FirebaseAuth.instance.currentUser!.uid;
 
          await FirebaseFirestore.instance.collection('tasks').doc(task.id).update({
@@ -417,13 +425,16 @@ class _EditTaskState extends State<EditTask> {
          }).then((onValue) {
            if (mounted) {
              Navigator.pop(context);
-             ScaffoldMessenger.of(context)
-                 .showSnackBar( SnackBar(content: const Text("Tache modifiée", style: TextStyle(color: Colors.black)), backgroundColor: ColorController().colorFour,));
+             SnackMessage(context, texte: "Tache modifiée").showMessage();
+
            }
          });
        } catch (e) {
          debugPrint(e.toString());
-         isLoading = false;
+         setState(() {
+           isLoading = false;
+         });
+         SnackMessage(closeIconColor: Colors.black,context, texte: "Une erreur est survenue! Veuillez ressayer plus tard.").showMessage();
        }
      }
    }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:task_management/controllers/color_controller.dart';
+import 'package:task_management/services/formatters/format_text.dart';
+import 'package:task_management/services/messages/snack_messages.dart';
 import 'package:task_management/views/widgets/button.dart';
 import 'package:task_management/views/widgets/custom_textField.dart';
 import 'package:task_management/views/widgets/custom_title.dart';
@@ -17,7 +19,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool showPassword = true;
+  bool showPassword = false;
   bool _isLoading = false;
   late TextEditingController email;
   late TextEditingController password;
@@ -80,15 +82,15 @@ class _LoginPageState extends State<LoginPage> {
                 hidePassword: showPassword,
                 controller: password,
                 trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      showPassword ? Iconsax.eye_slash : Iconsax.eye,
-                      color: Colors.white,
-                    )),
+                  onPressed: () {
+                    setState(() {
+                      showPassword = !showPassword;
+                    });
+                  },
+                  icon: Icon(
+                    showPassword ? Iconsax.eye : Iconsax.eye_slash,
+                    color: Colors.white,
+                  )),
               ),
               VerticalSpacer(
                 height: 11,
@@ -141,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                         text: "S'inscrire",
                         color: ColorController().colorFour,
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.bold,
                       ))
                 ],
               )
@@ -167,26 +169,9 @@ class _LoginPageState extends State<LoginPage> {
         _isLoading = false;
       });
       debugPrint(e.toString());
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-                        .showSnackBar(
-        SnackBar(behavior: SnackBarBehavior.floating,showCloseIcon: true ,content: Text(getMessageFromErrorCode(e.code),
 
-        ),
-        backgroundColor: Colors.red,)
-      );
+      SnackMessage(context, texte: FormatText().getMessageFromErrorCode(e.code), color: Colors.white, backgroundColor: Colors.red).showMessage();
     }
   }
-  String getMessageFromErrorCode(String errorCode) {
-    switch (errorCode) {
-      case "invalid-credential":
-        return "Adresse email ou mot de passe incorrect";
-      case "user-disabled":
-        return "Votre compte est bloqué. Veuillez contacter l'administrateur";
-      case "email-already-in-use":
-        return "L'adresse email existe déja.";
-      default:
-        return "Connexion échouée. Veuillez réssayer plus tard";
-    }
-  }
+
 }

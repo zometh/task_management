@@ -18,4 +18,16 @@ class FormatText {
     String format = description[0].toUpperCase() + description.substring(1);
     return format;
   }
+  String getMessageFromErrorCode(String errorCode) {
+    switch (errorCode) {
+      case "invalid-credential":
+        return "Adresse email ou mot de passe incorrect";
+      case "user-disabled":
+        return "Votre compte est bloqué. Veuillez contacter l'administrateur";
+      case "email-already-in-use":
+        return "L'adresse email existe déja.";
+      default:
+        return "Connexion échouée. Veuillez réssayer plus tard";
+    }
+  }
 }

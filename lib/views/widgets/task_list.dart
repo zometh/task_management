@@ -10,7 +10,8 @@ class TaskList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding:  EdgeInsets.only(left: 13.w, right: 13.w, top: 5.h),
-      child: ListView.builder(
+      child: ListView.separated(
+        separatorBuilder: (_, index) => SizedBox(height: 5.h,),
           itemCount: tasks.length,
           itemBuilder: (_, index){
             return TaskTile(task: tasks[index]);

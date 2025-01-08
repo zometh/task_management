@@ -29,4 +29,5 @@ class GetUserDatas {
     return FirebaseFirestore.instance.collection('tasks').where('idUser', isEqualTo: uid).where('state', isEqualTo: 2).snapshots();
   }
 
+
 }

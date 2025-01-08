@@ -12,6 +12,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../controllers/color_controller.dart';
+import '../../services/formatters/format_text.dart';
+import '../../services/messages/snack_messages.dart';
 import '../widgets/button.dart';
 import '../widgets/custom_textField.dart';
 import '../widgets/custom_title.dart';
@@ -183,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         text: "Se connecter",
                         color: ColorController().colorFour,
                         fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.bold,
                       ))
                 ],
               )
@@ -237,11 +239,12 @@ class _RegisterPageState extends State<RegisterPage> {
       });
 
       //Navigator.pop(context);
-    } catch (e) {
+    }on FirebaseAuthException catch (e) {
       setState(() {
         _isLaoding = false;
       });
-      debugPrint(e.toString());
+      SnackMessage(context, texte: FormatText().getMessageFromErrorCode(e.code), color: Colors.white, backgroundColor: Colors.red).showMessage();
+
     }
   }
 
