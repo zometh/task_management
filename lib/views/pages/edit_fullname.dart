@@ -11,6 +11,7 @@ import '../widgets/vertical_spacer.dart';
 
 class EditFullNamePage extends StatefulWidget {
   final UserMine userMine;
+
   const EditFullNamePage({super.key, required this.userMine});
 
   @override
@@ -41,6 +42,7 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
 
     nom.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +52,9 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 50.h,),
+            SizedBox(
+              height: 50.h,
+            ),
             CustomTextField(
               leading: Icons.account_circle,
               controller: prenom,
@@ -67,33 +71,32 @@ class _EditFullNamePageState extends State<EditFullNamePage> {
             VerticalSpacer(
               height: 27,
             ),
-        GestureDetector(
-          onTap: _update,
-          child: CustomButton(
-              widget: CustomTitle(
-                text: "Modifier",
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-              )))
+            GestureDetector(
+                onTap: _update,
+                child: CustomButton(
+                    widget: CustomTitle(
+                  text: "Modifier",
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                )))
           ],
         ),
       ),
     );
   }
-  _update() async{
-    try{
+
+  _update() async {
+    try {
       String firstname = prenom.text.trim();
       String lastname = nom.text.trim();
-      await FirebaseFirestore.instance.
-    collection('users').doc(user.id)
-      .update({
-        'prenom': firstname,
-        'nom': lastname
-      }).then((onValue){
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.id)
+          .update({'prenom': firstname, 'nom': lastname}).then((onValue) {
         Navigator.pop(context);
       });
-    }catch (e){
+    } catch (e) {
       debugPrint(e.toString());
     }
   }

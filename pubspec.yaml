@@ -13,11 +13,13 @@ dependencies:
 
   cloud_firestore: ^5.5.0
   cupertino_icons: ^1.0.8
+  email_validator: ^3.0.0
   firebase_auth: ^5.3.3
   firebase_core: ^3.8.1
   firebase_storage: ^12.3.6
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.2.1
   flutter_localization: ^0.3.0
   flutter_screenutil: ^5.9.3
   google_fonts: ^6.2.1
@@ -41,6 +43,7 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - lib/assets/imgs/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

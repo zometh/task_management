@@ -38,7 +38,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: GetUserDatas().getConnectedUserInfos(),
-        builder: (_, snapshot){
+        builder: (_, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(
@@ -60,13 +60,14 @@ class _UserPageState extends State<UserPage> {
           final UserMine user = UserMine.fromJson(data!);
           return Scaffold(
             appBar: CustomAppBar(appBarTitle: "Profil"),
-
             body: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 17.w),
                 child: Column(
                   children: [
-                    SizedBox(height: 30.h,),
+                    SizedBox(
+                      height: 30.h,
+                    ),
                     Center(
                       child: CircleAvatar(
                         radius: 73,
@@ -76,39 +77,52 @@ class _UserPageState extends State<UserPage> {
                           backgroundColor: ColorController().colorFour,
                           backgroundImage: NetworkImage(user.imageUrl),
                           child: Stack(
-clipBehavior: Clip.none,
+                            clipBehavior: Clip.none,
                             children: [
                               Positioned(
                                   top: 110.h,
                                   left: 100.w,
                                   child: IconButton(
                                       style: ButtonStyle(
-                                          foregroundColor: WidgetStatePropertyAll(ColorController().colorFour),
-                                          backgroundColor: const WidgetStatePropertyAll(Colors.black)
-                                      ),
-                                      onPressed: _pickImage, icon: const Icon(Iconsax.add_square)))
+                                          foregroundColor:
+                                              WidgetStatePropertyAll(
+                                                  ColorController().colorFour),
+                                          backgroundColor:
+                                              const WidgetStatePropertyAll(
+                                                  Colors.black)),
+                                      onPressed: _pickImage,
+                                      icon: const Icon(Iconsax.add_square)))
                             ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 20.h,),
+                    SizedBox(
+                      height: 20.h,
+                    ),
                     UserPageTile(
                         iconData: Iconsax.user_add,
-                        title: FormatText().formatTitle("${user.prenom} ${user.nom}"),
+                        title: FormatText()
+                            .formatTitle("${user.prenom} ${user.nom}"),
                         redirectPage: EditFullNamePage(userMine: user)),
-                    SizedBox(height: 12.h,),
-                    UserPageTile(
-                        iconData: Iconsax.user_tag,
-                        title: user.email,
-                        showEdit: false,
+                    SizedBox(
+                      height: 12.h,
                     ),
-                    SizedBox(height: 12.h,),
+                    UserPageTile(
+                      iconData: Iconsax.user_tag,
+                      title: user.email,
+                      showEdit: false,
+                    ),
+                    SizedBox(
+                      height: 12.h,
+                    ),
                     UserPageTile(
                         iconData: Iconsax.lock,
                         title: "Mot de passe",
                         redirectPage: EditPassword(userMine: user)),
-                    SizedBox(height: 20.h,),
+                    SizedBox(
+                      height: 20.h,
+                    ),
                     GestureDetector(
                       onTap: showTaskDialog,
                       child: Row(
@@ -116,156 +130,161 @@ clipBehavior: Clip.none,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           CustomButton(
-
                               widget: CustomTitle(
-                                text: "Se déconnecter",
-                                fontSize: 18,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              )),
-
+                            text: "Se déconnecter",
+                            fontSize: 18,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          )),
                         ],
                       ),
                     ),
                   ],
                 ),
-
               ),
             ),
           );
-        }
-    );
+        });
   }
-  _disconnect() async{
+
+  _disconnect() async {
     await FirebaseAuth.instance.signOut();
     Provider.of<NavigationProvider>(context, listen: false).changeIndex(0);
   }
-  _pickImage() async{
-    final XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 30);
-    if(xFile != null){
+
+  _pickImage() async {
+    final XFile? xFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 30);
+    if (xFile != null) {
       setState(() {
         file = File(xFile.path);
       });
       confirmPicChange(file!);
-
     }
   }
-  showTaskDialog() async{
+
+  showTaskDialog() async {
     await showDialog(
         barrierColor: Colors.transparent,
         barrierDismissible: false,
-        context: context, builder: (_){
-      return BackdropFilter(filter: ImageFilter.blur(
-          sigmaY: 5,
-          sigmaX: 5
-      ),
-        child: AlertDialog(
-
-          backgroundColor: ColorController().colorSixth,
-          content: Text("Etes-vous sur de vouloir vous déconnecter?",
-            style: GoogleFonts.signika(fontSize: 15, color: Colors.white),
-          ),
-          title: Text("Déconnexion",
-            style: GoogleFonts.signika(fontSize: 19.sp, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          actions: [
-            ElevatedButton(onPressed: (){
-              _disconnect();
-              Navigator.pop(context);
-            },
-              style: const ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(Colors.white),
-                  backgroundColor: WidgetStatePropertyAll(Colors.red)
-              ), child: const Text("Oui",
-                style: TextStyle(fontWeight: FontWeight.bold),
+        context: context,
+        builder: (_) {
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaY: 5, sigmaX: 5),
+            child: AlertDialog(
+              backgroundColor: ColorController().colorSixth,
+              content: Text(
+                "Etes-vous sur de vouloir vous déconnecter?",
+                style: GoogleFonts.signika(fontSize: 15, color: Colors.white),
               ),
-            ),
-            ElevatedButton(onPressed: () => Navigator.pop(context),
-              style: const ButtonStyle(
-                  foregroundColor: WidgetStatePropertyAll(Colors.white),
-                  backgroundColor: WidgetStatePropertyAll(Colors.blue)
-              ), child: const Text("Non",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold
+              title: Text(
+                "Déconnexion",
+                style: GoogleFonts.signika(
+                    fontSize: 19.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    _disconnect();
+                    Navigator.pop(context);
+                  },
+                  style: const ButtonStyle(
+                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      backgroundColor: WidgetStatePropertyAll(Colors.red)),
+                  child: const Text(
+                    "Oui",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: const ButtonStyle(
+                      foregroundColor: WidgetStatePropertyAll(Colors.white),
+                      backgroundColor: WidgetStatePropertyAll(Colors.blue)),
+                  child: const Text(
+                    "Non",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+              shape:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
             ),
-          ],
-          shape: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-        ),
-      );
-    });
+          );
+        });
   }
-  confirmPicChange(File file) async{
-    showBottomSheet(
 
+  confirmPicChange(File file) async {
+    showBottomSheet(
         showDragHandle: true,
         backgroundColor: ColorController().colorFive,
         elevation: 10,
-
-        context: context, builder: (_){
-      return Container(
-        decoration: BoxDecoration(
-          color: ColorController().colorFive,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
-        ),
-        height: 220.h,
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: FileImage(file!),
-            ),
-        SizedBox(height: 12.h,),
-        GestureDetector(
-          onTap: (){
-            editProfileImage();
-          },
-          child: Container(
-
-            width: 110,
-            height: 45.h,
+        context: context,
+        builder: (_) {
+          return Container(
             decoration: BoxDecoration(
-              color: ColorController().colorFour,
-              borderRadius: BorderRadius.circular(5),
+                color: ColorController().colorFive,
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15))),
+            height: 220.h,
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: FileImage(file!),
+                ),
+                SizedBox(
+                  height: 12.h,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    editProfileImage();
+                  },
+                  child: Container(
+                    width: 110,
+                    height: 45.h,
+                    decoration: BoxDecoration(
+                      color: ColorController().colorFour,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Confirmer",
+                        style: TextStyle(
+                            fontFamily: 'PliatExtended',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13.sp),
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
-            child: Center(
-              child: Text(
-                "Confirmer",
-                style: TextStyle(
-                    fontFamily: 'PliatExtended',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13.sp),
-              ),
-            ),
-          ),
-        )
-          ],
-        ),
-      );
-    });
+          );
+        });
   }
-  editProfileImage() async{
-    try{
 
+  editProfileImage() async {
+    try {
       final String uid = FirebaseAuth.instance.currentUser!.uid;
 
-
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final String filename = '${uid}_$timestamp.jpg';  // Ajout du timestamp et extension
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final String filename =
+          '${uid}_$timestamp.jpg'; // Ajout du timestamp et extension
+      final userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
       final String? previousImageUrl = userDoc.data()?['imageUrl'];
 
       if (previousImageUrl != null && previousImageUrl.isNotEmpty) {
         // Extraire le nom du fichier à partir de l'URL
         final Uri uri = Uri.parse(previousImageUrl);
         final String previousFilename = uri.pathSegments.last;
-  
+
         // Supprimer l'image précédente de Supabase
         await Supabase.instance.client.storage
             .from("users_profiles")
@@ -273,16 +292,12 @@ clipBehavior: Clip.none,
       }
 
       // 1. Upload l'image sur Supabase avec le nouveau nom
-      await Supabase.instance
-          .client
-          .storage
-          .from("users_profiles")
-          .upload(filename, file!, fileOptions: const FileOptions(upsert: true));
+      await Supabase.instance.client.storage.from("users_profiles").upload(
+          filename, file!,
+          fileOptions: const FileOptions(upsert: true));
 
       // 2. Obtenir l'URL publique de l'image
-      final String imageUrl = Supabase.instance
-          .client
-          .storage
+      final String imageUrl = Supabase.instance.client.storage
           .from('users_profiles')
           .getPublicUrl(filename);
 
@@ -290,11 +305,9 @@ clipBehavior: Clip.none,
       await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
-          .update({
-        'imageUrl': imageUrl
-      });
+          .update({'imageUrl': imageUrl});
       Navigator.pop(context);
-    }catch (e){
+    } catch (e) {
       debugPrint(e.toString());
     }
   }

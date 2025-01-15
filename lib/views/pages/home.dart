@@ -18,13 +18,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late TextEditingController searchController;
   late TabController _tabController;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     searchController = TextEditingController();
     _tabController = TabController(length: 4, vsync: this);
-
   }
 
   @override
@@ -92,16 +92,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   Wrap(
                                     direction: Axis.horizontal,
                                     children: [
-                                      Text(FormatText().formatTitle(user.prenom),
-                                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                            fontWeight: FontWeight.normal,
-
-                                          )),
+                                      Text(
+                                          FormatText().formatTitle(user.prenom),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.normal,
+                                              )),
                                       Text(FormatText().formatTitle(user.nom),
-                                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                            fontWeight: FontWeight.normal,
-
-                                          )),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge!
+                                              .copyWith(
+                                                fontWeight: FontWeight.normal,
+                                              )),
                                     ],
                                   ),
                                 ],
@@ -120,7 +125,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ),
                   )),
-
               body: TabBarView(
                 controller: _tabController,
                 children: menus,
@@ -129,7 +133,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           );
         });
   }
-  TabBar tabBar(){
+
+  TabBar tabBar() {
     return TabBar(
       padding: EdgeInsets.only(right: 15.w),
       labelPadding: const EdgeInsets.symmetric(horizontal: 0),
@@ -145,9 +150,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           fontSize: 13.sp,
           color: ColorController().colorFour),
       indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(
-              width: 3,
-              color: ColorController().colorFour),
+          borderSide: BorderSide(width: 3, color: ColorController().colorFour),
           insets: const EdgeInsets.all(5)),
       automaticIndicatorColorAdjustment: true,
       tabs: const [
@@ -166,5 +169,4 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ],
     );
   }
-
 }

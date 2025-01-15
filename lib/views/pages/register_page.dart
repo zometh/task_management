@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:task_management/views/widgets/app_logo.dart';
 
 import '../../controllers/color_controller.dart';
 import '../../services/formatters/format_text.dart';
@@ -28,12 +30,16 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   bool showPassword = false;
+  bool showConfirmPassword = false;
+  final GlobalKey<FormState> key = GlobalKey<FormState>();
   late TextEditingController email;
   late TextEditingController password;
+  late TextEditingController passwordConfirm;
   late TextEditingController prenom;
   late TextEditingController nom;
   bool _isLaoding = false;
   File? file;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -42,6 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
     password = TextEditingController();
     nom = TextEditingController();
     prenom = TextEditingController();
+    passwordConfirm = TextEditingController();
   }
 
   @override
@@ -51,145 +58,167 @@ class _RegisterPageState extends State<RegisterPage> {
     email.dispose();
     prenom.dispose();
     password.dispose();
+    passwordConfirm.dispose();
     nom.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 26.w, vertical: 50.h),
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                height: 10.h,
-              ),
-              Center(
-                child: Image.asset(
-                  "lib/assets/imgs/logo.png",
-                  height: 40.h,
-                  //width: 30.w,
+          child: Form(
+            key: key,
+            child: Column(
+              //mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  height: 10.h,
                 ),
-              ),
-              VerticalSpacer(
-                height: 30.h,
-              ),
-              Center(
-                child: Column(
+                const Center(
+                  child: AppLogo(
+                    size: 17,
+                  ),
+                ),
+                VerticalSpacer(
+                  height: 30.h,
+                ),
+                Center(
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundImage: (file == null)
+                            ? const AssetImage(
+                                "lib/assets/imgs/user_default.jpeg")
+                            : FileImage(file!),
+                        backgroundColor: Colors.blueGrey,
+                      ),
+                      VerticalSpacer(
+                        height: 5,
+                      ),
+                      TextButton(
+                          onPressed: pickImage,
+                          child: Text(
+                            "Choisir une photo",
+                            style: GoogleFonts.inter(
+                              color: Colors.grey.shade200,
+                            ),
+                          ))
+                    ],
+                  ),
+                ),
+                VerticalSpacer(
+                  height: 18,
+                ),
+                CustomTextField(
+                  leading: Icons.account_circle,
+                  controller: prenom,
+                  hintText: "Prénom",
+                ),
+                VerticalSpacer(
+                  height: 27,
+                ),
+                CustomTextField(
+                  leading: Icons.account_circle,
+                  controller: nom,
+                  hintText: "Nom",
+                ),
+                VerticalSpacer(
+                  height: 27,
+                ),
+                CustomTextField(
+                  leading: Icons.mail,
+                  controller: email,
+                  hintText: "email",
+                ),
+                VerticalSpacer(
+                  height: 27,
+                ),
+                CustomTextField(
+                  hintText: "Mot de passe",
+                  leading: Icons.lock,
+                  hidePassword: showPassword,
+                  controller: password,
+                  trailing: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          showPassword = !showPassword;
+                        });
+                      },
+                      icon: Icon(
+                        showPassword ? Iconsax.eye : Iconsax.eye_slash,
+                        color: Colors.white,
+                      )),
+                ),
+                VerticalSpacer(
+                  height: 27,
+                ),
+                CustomTextField(
+                  hintText: "Confirmer le mot de passe",
+                  leading: Icons.lock,
+                  hidePassword: showConfirmPassword,
+                  controller: passwordConfirm,
+                  trailing: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          showConfirmPassword = !showConfirmPassword;
+                        });
+                      },
+                      icon: Icon(
+                        showConfirmPassword ? Iconsax.eye : Iconsax.eye_slash,
+                        color: Colors.white,
+                      )),
+                ),
+                VerticalSpacer(
+                  height: 38,
+                ),
+                _isLaoding
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: ColorController().colorFour,
+                        ),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          if (key.currentState!.validate()) _register();
+                        },
+                        child: CustomButton(
+                            widget: CustomTitle(
+                          text: "S'inscrire",
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                        )),
+                      ),
+                VerticalSpacer(
+                  height: 38,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: (file == null)
-                          ? const AssetImage(
-                              "lib/assets/imgs/user_default.jpeg")
-                          : FileImage(file!),
-                      backgroundColor: Colors.blueGrey,
-                    ),
-                    VerticalSpacer(
-                      height: 5,
+                    CustomTitle(
+                      text: "Vous avez déja un compte?",
+                      color: ColorController().colorThree,
+                      fontSize: 16,
                     ),
                     TextButton(
-                        onPressed: pickImage,
-                        child: Text(
-                          "Choisir une photo",
-                          style: GoogleFonts.inter(
-                            color: Colors.grey.shade200,
-                          ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: CustomTitle(
+                          text: "Se connecter",
+                          color: ColorController().colorFour,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ))
                   ],
-                ),
-              ),
-              VerticalSpacer(
-                height: 18,
-              ),
-              CustomTextField(
-                leading: Icons.account_circle,
-                controller: prenom,
-                hintText: "Prénom",
-              ),
-              VerticalSpacer(
-                height: 27,
-              ),
-              CustomTextField(
-                leading: Icons.account_circle,
-                controller: nom,
-                hintText: "Nom",
-              ),
-              VerticalSpacer(
-                height: 27,
-              ),
-              CustomTextField(
-                leading: Icons.mail,
-                controller: email,
-                hintText: "email",
-              ),
-              VerticalSpacer(
-                height: 27,
-              ),
-              CustomTextField(
-                hintText: "Mot de passe",
-                leading: Icons.lock,
-                hidePassword: showPassword,
-                controller: password,
-                trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      showPassword ? Iconsax.eye : Iconsax.eye_slash,
-                      color: Colors.white,
-                    )),
-              ),
-              VerticalSpacer(
-                height: 38,
-              ),
-              _isLaoding
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: ColorController().colorOne,
-                      ),
-                    )
-                  : GestureDetector(
-                      onTap: _register,
-                      child: CustomButton(
-                          widget: CustomTitle(
-                        text: "S'inscrire",
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      )),
-                    ),
-              VerticalSpacer(
-                height: 38,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomTitle(
-                    text: "Vous avez déja un compte?",
-                    color: ColorController().colorThree,
-                    fontSize: 16,
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: CustomTitle(
-                        text: "Se connecter",
-                        color: ColorController().colorFour,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ))
-                ],
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -197,54 +226,74 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _register() async {
-    try {
-      setState(() {
-        _isLaoding = true;
-      });
-      String mail = email.text.trim();
-      String pwd = password.text.trim();
-      String firstname = prenom.text.trim();
-      String lastname = nom.text.trim();
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: mail, password: pwd);
+    String pwd = password.text.trim();
+    String confirmPwd = passwordConfirm.text.trim();
+    String mail = email.text.trim();
+    if (EmailValidator.validate(mail)) {
+      if (pwd == confirmPwd) {
+        try {
+          setState(() {
+            _isLaoding = true;
+          });
 
-      String uid = userCredential.user!.uid;
+          String firstname = prenom.text.trim();
+          String lastname = nom.text.trim();
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(email: mail, password: pwd);
 
-      File fileNew = (file == null
-          ? await getImageFileFromAssets("lib/assets/imgs/user_default.jpeg")
-          : file!);
+          String uid = userCredential.user!.uid;
 
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final String filename = '${uid}_$timestamp.jpg';
-      await Supabase.instance.client.storage
-          .from('users_profiles')
-          .upload(filename, fileNew, fileOptions: const FileOptions(upsert: true));
-      final String imageUrl = Supabase.instance
-          .client
-          .storage
-          .from('users_profiles')
-          .getPublicUrl(filename);
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set({
-        'id': uid,
-        "prenom": firstname,
-        "nom": lastname,
-        "email": userCredential.user!.email,
-        "registerDate": Timestamp.now(),
-        'imageUrl':imageUrl
-      }).then((onValue) {
-        if (mounted) Navigator.pop(context);
-      });
+          File fileNew = (file == null
+              ? await getImageFileFromAssets(
+                  "lib/assets/imgs/user_default.jpeg")
+              : file!);
 
-      //Navigator.pop(context);
-    }on FirebaseAuthException catch (e) {
-      setState(() {
-        _isLaoding = false;
-      });
-      SnackMessage(context, texte: FormatText().getMessageFromErrorCode(e.code), color: Colors.white, backgroundColor: Colors.red).showMessage();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final String filename = '${uid}_$timestamp.jpg';
+          await Supabase.instance.client.storage.from('users_profiles').upload(
+              filename, fileNew,
+              fileOptions: const FileOptions(upsert: true));
+          final String imageUrl = Supabase.instance.client.storage
+              .from('users_profiles')
+              .getPublicUrl(filename);
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userCredential.user!.uid)
+              .set({
+            'id': uid,
+            "prenom": firstname,
+            "nom": lastname,
+            "email": userCredential.user!.email,
+            "registerDate": Timestamp.now(),
+            'imageUrl': imageUrl
+          }).then((onValue) {
+            if (mounted) Navigator.pop(context);
+          });
 
+          //Navigator.pop(context);
+        } on FirebaseAuthException catch (e) {
+          setState(() {
+            _isLaoding = false;
+          });
+          SnackMessage(context,
+                  texte: FormatText().getMessageFromErrorCode(e.code),
+                  color: Colors.white,
+                  backgroundColor: Colors.red)
+              .showMessage();
+        }
+      } else {
+        SnackMessage(context,
+                texte: "Les deux mots de passe ne correspondent pas!",
+                color: Colors.white,
+                backgroundColor: Colors.red)
+            .showMessage();
+      }
+    } else {
+      SnackMessage(context,
+              texte: "L'adresse email est incorrect",
+              color: Colors.white,
+              backgroundColor: Colors.red)
+          .showMessage();
     }
   }
 

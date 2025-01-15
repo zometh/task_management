@@ -4,6 +4,7 @@ import 'package:task_management/views/pages/custom_appbar.dart';
 
 class EditMailPage extends StatefulWidget {
   final UserMine userMine;
+
   const EditMailPage({super.key, required this.userMine});
 
   @override

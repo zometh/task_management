@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:task_management/controllers/color_controller.dart';
 import 'package:task_management/models/user_mine.dart';
-import 'package:task_management/services/formatters/format_text.dart';
 import 'package:task_management/services/messages/snack_messages.dart';
 import 'package:task_management/views/pages/custom_appbar.dart';
 
@@ -14,6 +13,7 @@ import '../widgets/custom_title.dart';
 
 class EditPassword extends StatefulWidget {
   final UserMine userMine;
+
   const EditPassword({super.key, required this.userMine});
 
   @override
@@ -29,6 +29,7 @@ class _EditPasswordState extends State<EditPassword> {
   late TextEditingController newPassword;
   late TextEditingController confirmPassword;
   final GlobalKey<FormState> key = GlobalKey<FormState>();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -37,6 +38,7 @@ class _EditPasswordState extends State<EditPassword> {
     newPassword = TextEditingController();
     confirmPassword = TextEditingController();
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -45,6 +47,7 @@ class _EditPasswordState extends State<EditPassword> {
     newPassword.dispose();
     confirmPassword.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +58,9 @@ class _EditPasswordState extends State<EditPassword> {
           key: key,
           child: Column(
             children: [
-              SizedBox(height: 50.h,),
+              SizedBox(
+                height: 50.h,
+              ),
               CustomTextField(
                 hintText: "Ancien mot de passe",
                 leading: Icons.lock,
@@ -72,7 +77,9 @@ class _EditPasswordState extends State<EditPassword> {
                       color: Colors.white,
                     )),
               ),
-              SizedBox(height: 20.h,),
+              SizedBox(
+                height: 20.h,
+              ),
               CustomTextField(
                 hintText: "Nouveau mot de passe",
                 leading: Icons.lock,
@@ -89,50 +96,58 @@ class _EditPasswordState extends State<EditPassword> {
                       color: Colors.white,
                     )),
               ),
-              SizedBox(height: 20.h,),
-              _updating ? Center(child: CircularProgressIndicator(color: ColorController().colorFour,),)
-              : CustomTextField(
-                hintText: "Confirmation",
-                leading: Icons.lock,
-                hidePassword: showPassword,
-                controller: confirmPassword,
-                trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      showPassword ? Iconsax.eye : Iconsax.eye_slash,
-                      color: Colors.white,
-                    )),
+              SizedBox(
+                height: 20.h,
               ),
-              SizedBox(height: 20.h,),
-
+              _updating
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: ColorController().colorFour,
+                      ),
+                    )
+                  : CustomTextField(
+                      hintText: "Confirmation",
+                      leading: Icons.lock,
+                      hidePassword: showPassword,
+                      controller: confirmPassword,
+                      trailing: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
+                          },
+                          icon: Icon(
+                            showPassword ? Iconsax.eye : Iconsax.eye_slash,
+                            color: Colors.white,
+                          )),
+                    ),
+              SizedBox(
+                height: 20.h,
+              ),
               GestureDetector(
-                  onTap: (){
-                    if(key.currentState!.validate()) _updatePassword();
-
+                  onTap: () {
+                    if (key.currentState!.validate()) _updatePassword();
                   },
                   child: CustomButton(
                       widget: CustomTitle(
-                        text: "Modifier",
-                        fontSize: 18,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                      )))
+                    text: "Modifier",
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  )))
             ],
           ),
         ),
       ),
     );
   }
-  _updatePassword() async{
+
+  _updatePassword() async {
     String _oldPassword = password.text;
     String _newPassword = newPassword.text;
     String _confirmNewPassword = confirmPassword.text;
-    if(_newPassword  == _confirmNewPassword){
-      try{
+    if (_newPassword == _confirmNewPassword) {
+      try {
         setState(() {
           _updating = true;
         });
@@ -145,17 +160,28 @@ class _EditPasswordState extends State<EditPassword> {
         await _user!.reauthenticateWithCredential(credential);
         await _user.updatePassword(_newPassword);
         Navigator.pop(context);
-        SnackMessage(context, texte: "Mot de passe modifié avec succès", color: Colors.white, backgroundColor: Colors.green).showMessage();
-
-      }on FirebaseAuthException catch (e){
+        SnackMessage(context,
+                texte: "Mot de passe modifié avec succès",
+                color: Colors.white,
+                backgroundColor: Colors.green)
+            .showMessage();
+      } on FirebaseAuthException catch (e) {
         setState(() {
           _updating = false;
         });
-        SnackMessage(context, texte: "Votre ancien mot de passe est incorrect", color: Colors.white, backgroundColor: Colors.red).showMessage();
+        SnackMessage(context,
+                texte: "Votre ancien mot de passe est incorrect",
+                color: Colors.white,
+                backgroundColor: Colors.red)
+            .showMessage();
       }
-    }else{
+    } else {
       confirmPassword.clear();
-      SnackMessage(context, texte: "Les deux mots de passe ne correspondent pas", color: Colors.white, backgroundColor: Colors.red).showMessage();
+      SnackMessage(context,
+              texte: "Les deux mots de passe ne correspondent pas",
+              color: Colors.white,
+              backgroundColor: Colors.red)
+          .showMessage();
     }
   }
 }

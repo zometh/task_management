@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:task_management/controllers/color_controller.dart';
 import 'package:task_management/views/widgets/vertical_spacer.dart';
+
 class CustomTextField extends StatefulWidget {
   final Widget? trailing;
   final IconData leading;
@@ -42,7 +43,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         maxHeight: widget.heigth.h,
       ),
       child: TextFormField(
-        validator: (value) => value!.isEmpty ? "Veuillez remplir ce champs" : null,
+        validator: (value) =>
+            value!.isEmpty ? "Veuillez remplir ce champs" : null,
         onChanged: (value) {
           setState(() {});
         },
@@ -54,7 +56,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         obscureText: widget.hidePassword,
         decoration: InputDecoration(
           // Ajout d'un padding vertical constant
-          contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
           isDense: false, // Empêche la compression du TextField
           labelStyle: GoogleFonts.signika(
             color: Colors.white,
@@ -63,18 +66,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
           hintText: widget.hintText,
           suffixIcon: widget.showSuffix
               ? widget.controller.text.isNotEmpty
-              ? IconButton(
-            onPressed: () {
-              widget.controller.clear();
-            },
-            icon: const Icon(
-              Icons.clear,
-              color: Colors.white,
-            ),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          )
-              : const SizedBox.shrink()
+                  ? IconButton(
+                      onPressed: () {
+                        widget.controller.clear();
+                      },
+                      icon: const Icon(
+                        Icons.clear,
+                        color: Colors.white,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    )
+                  : const SizedBox.shrink()
               : widget.trailing,
           prefixIcon: Icon(
             widget.leading,
@@ -88,16 +91,18 @@ class _CustomTextFieldState extends State<CustomTextField> {
           filled: true,
           fillColor: ColorController().colorFive,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.r), // Ajout d'un border radius constant
+            borderRadius:
+                BorderRadius.circular(8.r), // Ajout d'un border radius constant
           ),
           // Assure que tous les bords ont le même style
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Colors.white),
+            borderSide: BorderSide(color: ColorController().colorFour),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.r),
-            borderSide: const BorderSide(color: Colors.white, width: 2),
+            borderSide:
+                BorderSide(color: ColorController().colorFour, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.r),
@@ -112,6 +117,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     );
   }
 }
+
 /*
 class CustomTextField extends StatefulWidget {
   final Widget? trailing;
@@ -205,7 +211,6 @@ class TaskTextField extends StatelessWidget {
   const TaskTextField(
       {super.key,
       required this.controller,
-
       this.maxLength = 50,
       this.maxLines = 1});
 
@@ -224,13 +229,11 @@ class TaskTextField extends StatelessWidget {
       },
       decoration: InputDecoration(
         counterStyle: const TextStyle(color: Colors.white),
-          border: const OutlineInputBorder(
-              //borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: Colors.transparent)),
-
+        border: const OutlineInputBorder(
+            //borderRadius: BorderRadius.circular(15),
+            borderSide: BorderSide(color: Colors.transparent)),
         filled: true,
         fillColor: ColorController().colorFive,
-
       ),
     );
   }

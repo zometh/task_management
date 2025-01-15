@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +20,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Widget> pages = [Home(), UserPage(), SearchPage(), MorePage()];
 
-
   @override
   Widget build(BuildContext context) {
     NavigationProvider provider =
@@ -33,25 +31,18 @@ class _HomePageState extends State<HomePage> {
           children: pages,
         ),
         floatingActionButton: (provider.currentIndex != 1)
-        ? FloatingActionButton(
-          shape: const OvalBorder(),
-          onPressed: () => Navigator.pushNamed(context, '/add_task'),
-          backgroundColor: ColorController().colorFour,
-          child: Icon(
-            Icons.add,
-            color: ColorController().eightColor,
-            size: 35.sp,
-          ),
-        ) : null,
+            ? FloatingActionButton(
+                shape: const OvalBorder(),
+                onPressed: () => Navigator.pushNamed(context, '/add_task'),
+                backgroundColor: ColorController().colorFour,
+                child: Icon(
+                  Icons.add,
+                  color: ColorController().eightColor,
+                  size: 35.sp,
+                ),
+              )
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
         bottomNavigationBar: const CustomBottomNavigation());
   }
-
-
-
-
-
-
-
-
 }
